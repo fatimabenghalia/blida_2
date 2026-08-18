@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Association El Badr</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="login-styles.css">
+    <link rel="stylesheet" href="form-styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="logo.jpeg" alt="Logo El Badr">
+                <span>El Badr</span>
+            </div>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="index.html#services">Services</a></li>
+                <li><a href="index.html#apropos">À Propos</a></li>
+                <li><a href="reservation.html" class="btn-primary">Réserver</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Login Section -->
+    <section class="auth-section">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h2 class="section-title">Espace Patient</h2>
+                    <p class="section-subtitle">Connectez-vous pour accéder à votre espace personnel</p>
+                </div>
+
+                <form id="login-form" class="auth-form">
+                    <div id="login-error" class="error-message" style="display: none;"></div>
+                    <div id="login-success" class="success-message" style="display: none;"></div>
+                    
+                    <div class="form-tabs">
+                        <button type="button" class="tab-btn active" data-type="patient">Patient</button>
+                        <button type="button" class="tab-btn" data-type="admin">Administrateur</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" autocomplete="current-password" required>
+                            <button type="button" class="toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember">
+                            <span>Se souvenir de moi</span>
+                        </label>
+                        <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    </button>
+
+                    <div class="auth-links">
+                        <p>Vous n'avez pas de compte ? <a href="register.html">Créer un compte</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Association El Badr. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for redirect parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+            const errorType = urlParams.get('error');
+            
+            if (errorType === 'expired') {
+                const errorMessage = document.getElementById('login-error');
+                errorMessage.textContent = 'Votre session a expiré. Veuillez vous reconnecter.';
+                errorMessage.style.display = 'block';
+            }
+            
+            // Toggle password visibility
+            const togglePassword = document.querySelector('.toggle-password');
+            const passwordInput = document.getElementById('password');
+            
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+            
+            // Handle user type tabs
+            let userType = 'patient'; // Default user type
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    // Update user type
+                    userType = this.dataset.type;
+                });
+            });
+            
+            // Handle login form submission
+            const loginForm = document.getElementById('login-form');
+            const errorMessage = document.getElementById('login-error');
+            const successMessage = document.getElementById('login-success');
+            
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const submitButton = loginForm.querySelector('button[type="submit"]');
+                
+                // Show loading state
+                const originalText = submitButton.innerHTML;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion en cours...';
+                submitButton.disabled = true;
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+                
+                try {
+                    // Determine API endpoint based on user type
+                    const endpoint = userType === 'admin' 
+                        ? 'http://localhost:80/api/administrateurs/login'
+                        : 'http://localhost:80/api/patients/login';
+                    
+                    console.log(`Logging in as ${userType} via ${endpoint}`);
+                    
+                    // API request
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            mot_de_passe: password  // Use 'password' as this is what the user entered
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    console.log('Login response:', data);
+                    
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Identifiants incorrects');
+                    }
+                    
+                    // Clear any existing auth data
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userId');
+                    localStorage.removeItem('userEmail');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userRole');
+                    
+                    // Save auth token and user info
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userId', data.id);
+                    localStorage.setItem('userEmail', data.email);
+                    localStorage.setItem('userRole', userType);
+                    
+                    if (userType === 'admin') {
+                        localStorage.setItem('userName', data.nom_utilisateur);
+                    } else {
+                        localStorage.setItem('userName', `${data.prenom} ${data.nom}`);
+                    }
+                    
+                    // Show success message
+                    successMessage.textContent = 'Connexion réussie! Redirection en cours...';
+                    successMessage.style.display = 'block';
+                    
+                    // Determine redirection URL
+                    let redirectTo = userType === 'admin' ? 'admin.html' : 'dashboard.html';
+                    if (redirectUrl && userType === 'patient') {
+                        redirectTo = redirectUrl;
+                    }
+                    
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        window.location.href = redirectTo;
+                    }, 1000);
+                } catch (error) {
+                    // Show error message
+                    console.error('Login error:', error);
+                    errorMessage.textContent = error.message || 'Échec de la connexion';
+                    errorMessage.style.display = 'block';
+                    
+                    // Reset button
+                    submitButton.innerHTML = originalText;
+                    submitButton.disabled = false;
+                }
+            });
+        });
+    </script>
+
+    <style>
+    .form-tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .tab-btn {
+        flex: 1;
+        padding: 10px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        opacity: 0.7;
+        transition: all 0.3s;
+    }
+    
+    .tab-btn.active {
+        opacity: 1;
+        font-weight: bold;
+        border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .success-message {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        display: none;
+    }
+    </style>
+</body>
+</html> 

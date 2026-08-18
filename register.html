@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Association El Badr</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="login-styles.css">
+    <link rel="stylesheet" href="form-styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="logo.jpeg" alt="Logo El Badr">
+                <span>El Badr</span>
+            </div>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="index.html#services">Services</a></li>
+                <li><a href="index.html#apropos">À Propos</a></li>
+                <li><a href="reservation.html" class="btn-primary">Réserver</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Register Section -->
+    <section class="auth-section">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h2 class="section-title">Créer un compte</h2>
+                    <p class="section-subtitle">Inscrivez-vous pour accéder à nos services</p>
+                </div>
+
+                <form id="register-form" class="auth-form">
+                    <div id="register-error" class="error-message" style="display: none;"></div>
+                    
+                    <div class="form-group">
+                        <label for="nom">Nom</label>
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="nom" name="nom" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prenom">Prénom</label>
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="prenom" name="prenom" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_naissance">Date de naissance</label>
+                        <div class="input-group">
+                            <i class="fas fa-calendar"></i>
+                            <input type="date" id="date_naissance" name="date_naissance" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sexe</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="sexe" value="M" checked>
+                                <span>Homme</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="sexe" value="F">
+                                <span>Femme</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telephone">Téléphone</label>
+                        <div class="input-group">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" id="telephone" name="telephone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type_maladie">Type de maladie</label>
+                        <div class="input-group">
+                            <i class="fas fa-heartbeat"></i>
+                            <input type="text" id="type_maladie" name="type_maladie" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hopital">Hôpital</label>
+                        <div class="input-group">
+                            <i class="fas fa-hospital"></i>
+                            <input type="text" id="hopital" name="hopital" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" required>
+                            <button type="button" class="toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Confirmer le mot de passe</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirm_password" name="confirm_password" required>
+                            <button type="button" class="toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="terms">
+                            <input type="checkbox" name="terms" required>
+                            <span>J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a></span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-user-plus"></i> Créer un compte
+                    </button>
+
+                    <div class="auth-links">
+                        <p>Vous avez déjà un compte ? <a href="login.html">Se connecter</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Association El Badr. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Configuration API
+        const API_BASE_URL = 'http://localhost:80/api';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle password visibility
+            const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+            
+            togglePasswordButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const passwordInput = this.parentNode.querySelector('input');
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.querySelector('i').classList.toggle('fa-eye');
+                    this.querySelector('i').classList.toggle('fa-eye-slash');
+                });
+            });
+            
+            // Handle registration form
+            const registerForm = document.getElementById('register-form');
+            
+            registerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const nom = document.getElementById('nom').value.trim();
+                const prenom = document.getElementById('prenom').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const telephone = document.getElementById('telephone').value.trim();
+                const dateNaissance = document.getElementById('date_naissance').value;
+                const sexeElement = document.querySelector('input[name="sexe"]:checked');
+                const sexe = sexeElement ? sexeElement.value : null;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm_password').value;
+                const typeMaladie = document.getElementById('type_maladie').value.trim();
+                const hopital = document.getElementById('hopital').value.trim();
+                
+                // Check for missing required fields
+                const missingFields = [];
+                if (!nom) missingFields.push('Nom');
+                if (!prenom) missingFields.push('Prénom');
+                if (!dateNaissance) missingFields.push('Date de naissance');
+                if (!sexe) missingFields.push('Sexe');
+                if (!password) missingFields.push('Mot de passe');
+                
+                if (missingFields.length > 0) {
+                    showError(`Veuillez remplir les champs obligatoires : ${missingFields.join(', ')}`);
+                    return;
+                }
+                
+                // Log the values to debug
+                console.log('Registration form values:', { 
+                    nom, prenom, email, telephone, dateNaissance, 
+                    sexe, password, typeMaladie, hopital 
+                });
+                
+                // Verify that passwords match
+                if (password !== confirmPassword) {
+                    showError('Les mots de passe ne correspondent pas');
+                    return;
+                }
+                
+                const registerButton = registerForm.querySelector('button[type="submit"]');
+                const originalText = registerButton.innerHTML;
+                registerButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création du compte...';
+                registerButton.disabled = true;
+                
+                const requestBody = {
+                    nom: nom,
+                    prenom: prenom,
+                    date_naissance: dateNaissance,
+                    sexe: sexe,
+                    telephone: telephone || null,
+                    email: email || null,
+                    type_maladie: typeMaladie || null,
+                    notes: hopital ? `Hôpital: ${hopital}` : null,
+                    password: password
+                };
+                
+                console.log('Registration request body:', requestBody);
+                
+                try {
+                    // Créer le patient
+                    const patientResponse = await fetch(`${API_BASE_URL}/patients`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody),
+                    });
+                    
+                    const responseData = await patientResponse.json();
+                    console.log('Registration response:', responseData);
+                    
+                    if (!patientResponse.ok) {
+                        console.error('Registration error:', responseData);
+                        throw new Error(responseData.message || 'Échec de la création du compte');
+                    }
+                    
+                    // Se connecter avec les identifiants créés
+                    const loginResponse = await fetch(`${API_BASE_URL}/patients/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            mot_de_passe: password
+                        }),
+                    });
+                    
+                    const loginResult = await loginResponse.json();
+                    console.log('Login response:', loginResult);
+                    
+                    if (!loginResponse.ok) {
+                        throw new Error(loginResult.message || 'Compte créé, mais échec de la connexion. Veuillez vous connecter manuellement.');
+                    }
+                    
+                    // Stocker les informations d'authentification
+                    localStorage.setItem('authToken', loginResult.token);
+                    localStorage.setItem('userId', loginResult.id);
+                    localStorage.setItem('userEmail', loginResult.email);
+                    localStorage.setItem('userName', `${loginResult.prenom} ${loginResult.nom}`);
+                    localStorage.setItem('userRole', 'patient');
+                    
+                    // Afficher un message de succès et rediriger
+                    showSuccess('Compte créé avec succès !');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } catch (error) {
+                    registerButton.innerHTML = originalText;
+                    registerButton.disabled = false;
+                    showError(error.message || 'Échec de la création du compte');
+                }
+            });
+        });
+        
+        // Function to show success message
+        function showSuccess(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success';
+            alert.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                setTimeout(() => {
+                    alert.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Function to show error message
+        function showError(message) {
+            const errorElement = document.getElementById('register-error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Association El Badr</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="form-styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="logo.jpeg" alt="Logo El Badr">
+                <span>El Badr</span>
+            </div>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="logout" class="btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Admin Section -->
+    <section class="admin-section">
+        <div class="container">
+            <div class="admin-header">
+                <div>
+                    <h1 class="section-title">Panneau d'administration</h1>
+                    <p class="section-subtitle">Gérez les réservations et les utilisateurs</p>
+                </div>
+                <!-- The "Buildings" button will be added dynamically by admin.js -->
+            </div>
+
+            <div class="admin-tabs">
+                <button class="tab-button active" data-tab="reservations">
+                    <i class="fas fa-calendar-check"></i> Réservations
+                </button>
+                <button class="tab-button" data-tab="users">
+                    <i class="fas fa-users"></i> Utilisateurs
+                </button>
+                <button class="tab-button" data-tab="rooms">
+                    <i class="fas fa-bed"></i> Chambres
+                </button>
+            </div>
+
+            <div class="admin-content">
+                <!-- Réservations Tab -->
+                <div class="tab-content active" id="reservations">
+                    <div class="admin-actions">
+                        <button class="btn-primary">
+                            <i class="fas fa-plus"></i> Nouvelle réservation
+                        </button>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Rechercher une réservation...">
+                        </div>
+                    </div>
+                    <div class="admin-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Date d'arrivée</th>
+                                    <th>Durée</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Les données seront chargées dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Users Tab -->
+                <div class="tab-content" id="users">
+                    <div class="admin-actions">
+                        <button class="btn-primary">
+                            <i class="fas fa-user-plus"></i> Nouvel utilisateur
+                        </button>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Rechercher un utilisateur...">
+                        </div>
+                    </div>
+                    <div class="admin-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Les données seront chargées dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Rooms Tab -->
+                <div class="tab-content" id="rooms">
+                    <div class="admin-actions">
+                        <button class="btn-primary">
+                            <i class="fas fa-plus"></i> Ajouter une chambre
+                        </button>
+                    </div>
+                    <div class="rooms-grid">
+                        <!-- Les chambres seront chargées dynamiquement -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Association El Badr. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="admin.js"></script>
+
+    <style>
+        /* Admin styles */
+        .admin-section {
+            padding: 50px 0;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .admin-header {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 30px;
+        }
+        
+        .tab-button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-button:hover {
+            color: var(--primary-color);
+        }
+        
+        .tab-button.active {
+            color: white;
+            background-color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .admin-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .admin-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        .admin-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-table th, .admin-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .admin-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .admin-table td {
+            background-color: #f9f9f9;
+        }
+        
+        .admin-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .actions-cell {
+            white-space: nowrap;
+        }
+        
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            border: none;
+            background-color: #f0f0f0;
+            color: #555;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: all 0.2s;
+        }
+        
+        .btn-action:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .btn-action.edit:hover {
+            color: var(--primary-color);
+        }
+        
+        .btn-action.delete:hover {
+            color: #d9534f;
+        }
+        
+        .btn-action.view:hover {
+            color: #5bc0de;
+        }
+        
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .room-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+        
+        .room-card:hover {
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        
+        .building-section {
+            margin-bottom: 30px;
+        }
+        
+        .building-section h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .rooms-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-completed {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-admin {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .badge-patient {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .loading-message, .error-message, .empty-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* Fix form input alignment */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 12px;
+            color: #666;
+            z-index: 1;
+        }
+        
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            padding-left: 40px;
+            flex: 1;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            height: 42px;
+        }
+        
+        .input-group textarea {
+            min-height: 80px;
+            padding-top: 10px;
+        }
+        
+        .search-box input {
+            padding-left: 40px;
+        }
+    </style>
+</body>
+</html> 

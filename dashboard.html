@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - Association El Badr</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="form-styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="logo.jpeg" alt="Logo El Badr">
+                <span>El Badr</span>
+            </div>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="reservation.html">Nouvelle réservation</a></li>
+                <li><a href="#" id="logout" class="btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard-section">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1 class="section-title">Tableau de bord</h1>
+                <div class="user-info">
+                    <span class="welcome-message">Bienvenue, <span id="user-name">Patient</span></span>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-calendar-check"></i> Mes réservations</h2>
+                        <a href="reservation.html" class="btn-primary">
+                            <i class="fas fa-plus"></i> Nouvelle réservation
+                        </a>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-responsive">
+                            <table class="data-table" id="reservations-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Chambre</th>
+                                        <th>Lit</th>
+                                        <th>Date de début</th>
+                                        <th>Date de fin</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Les réservations seront chargées dynamiquement -->
+                                    <tr class="loading-row">
+                                        <td colspan="7" class="loading-message">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            Chargement des réservations...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-user"></i> Informations personnelles</h2>
+                        <button class="btn-secondary" id="edit-profile-btn">
+                            <i class="fas fa-edit"></i> Modifier
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div class="user-details">
+                            <div class="user-detail">
+                                <span class="detail-label">Nom</span>
+                                <span class="detail-value" id="user-lastname">-</span>
+                            </div>
+                            <div class="user-detail">
+                                <span class="detail-label">Prénom</span>
+                                <span class="detail-value" id="user-firstname">-</span>
+                            </div>
+                            <div class="user-detail">
+                                <span class="detail-label">Email</span>
+                                <span class="detail-value" id="user-email">-</span>
+                            </div>
+                            <div class="user-detail">
+                                <span class="detail-label">Téléphone</span>
+                                <span class="detail-value" id="user-phone">-</span>
+                            </div>
+                            <div class="user-detail">
+                                <span class="detail-label">Date de naissance</span>
+                                <span class="detail-value" id="user-dob">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal for editing profile -->
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Modifier mon profil</h2>
+            <form id="edit-profile-form">
+                <div class="form-group">
+                    <label for="edit-nom">Nom</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="edit-nom" name="edit-nom" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-prenom">Prénom</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="edit-prenom" name="edit-prenom" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-email">Email</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="edit-email" name="edit-email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-telephone">Téléphone</label>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="edit-telephone" name="edit-telephone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-password">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="edit-password" name="edit-password">
+                        <button type="button" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancel-edit">Annuler</button>
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Association El Badr. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Vérifier si l'utilisateur est connecté
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!isUserLoggedIn()) {
+                window.location.href = 'login.html?redirect=dashboard.html';
+                return;
+            }
+            
+            // Load user data
+            loadUserInfo();
+            
+            // Load reservations
+            loadUserReservations();
+            
+            // Handle profile edit button
+            document.getElementById('edit-profile-btn').addEventListener('click', function() {
+                showEditProfileModal();
+            });
+            
+            // Handle logout button
+            document.getElementById('logout').addEventListener('click', handleLogout);
+            
+            // Close modal on X click
+            document.querySelectorAll('.close-modal').forEach(closeBtn => {
+                closeBtn.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+            
+            // Cancel edit profile
+            document.getElementById('cancel-edit').addEventListener('click', function() {
+                document.getElementById('edit-profile-modal').style.display = 'none';
+            });
+            
+            // Toggle password visibility
+            document.querySelector('.toggle-password').addEventListener('click', function() {
+                const passwordInput = document.getElementById('edit-password');
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+            
+            // Handle profile edit form submission
+            document.getElementById('edit-profile-form').addEventListener('submit', async function(event) {
+                event.preventDefault();
+                
+                // Get form values
+                const nom = document.getElementById('edit-nom').value;
+                const prenom = document.getElementById('edit-prenom').value;
+                const email = document.getElementById('edit-email').value;
+                const telephone = document.getElementById('edit-telephone').value;
+                const password = document.getElementById('edit-password').value;
+                
+                // Create update object
+                const updateData = {
+                    nom: nom,
+                    prenom: prenom,
+                    email: email,
+                    telephone: telephone
+                };
+                
+                // Add password only if provided
+                if (password) {
+                    updateData.password = password;
+                }
+                
+                try {
+                    // Update patient
+                    const userId = localStorage.getItem('userId');
+                    const response = await fetch(`${API_BASE_URL}/patients/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                        },
+                        body: JSON.stringify(updateData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Échec de la mise à jour du profil');
+                    }
+                    
+                    // Close modal
+                    document.getElementById('edit-profile-modal').style.display = 'none';
+                    
+                    // Reload user info
+                    loadUserInfo();
+                    
+                    // Show success message
+                    showSuccess('Profil mis à jour avec succès');
+                } catch (error) {
+                    showError('Erreur lors de la mise à jour du profil');
+                }
+            });
+        });
+        
+        // Show edit profile modal
+        function showEditProfileModal() {
+            // Get current user data
+            const lastname = document.getElementById('user-lastname').textContent;
+            const firstname = document.getElementById('user-firstname').textContent;
+            const email = document.getElementById('user-email').textContent;
+            const phone = document.getElementById('user-phone').textContent;
+            
+            // Fill form fields
+            document.getElementById('edit-nom').value = lastname !== '-' ? lastname : '';
+            document.getElementById('edit-prenom').value = firstname !== '-' ? firstname : '';
+            document.getElementById('edit-email').value = email !== '-' ? email : '';
+            document.getElementById('edit-telephone').value = phone !== '-' ? phone : '';
+            document.getElementById('edit-password').value = '';
+            
+            // Show modal
+            document.getElementById('edit-profile-modal').style.display = 'block';
+        }
+    </script>
+</body>
+</html> 

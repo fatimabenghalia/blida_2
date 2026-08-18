@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Bâtiments - Association El Badr</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="form-styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="logo.jpeg" alt="Logo El Badr">
+                <span>El Badr</span>
+            </div>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="admin.html">Tableau de bord</a></li>
+                <li><a href="index.html">Site Public</a></li>
+                <li><a href="#" id="logout" class="btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Section des bâtiments administratifs -->
+    <section class="admin-section">
+        <div class="container">
+            <div class="admin-header">
+                <h1 class="section-title">Gestion des Bâtiments</h1>
+                <p class="section-subtitle">Ajoutez, modifiez ou supprimez des bâtiments</p>
+            </div>
+
+            <div class="admin-content">
+                <div class="admin-toolbar">
+                    <button id="add-building-btn" class="btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter un bâtiment
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-building" placeholder="Rechercher un bâtiment...">
+                    </div>
+                </div>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table" id="buildings-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Description</th>
+                                <th>Nombre de chambres</th>
+                                <th>Date de création</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Les données seront chargées dynamiquement -->
+                            <tr class="loading-row">
+                                <td colspan="6">
+                                    <div class="loading-spinner">
+                                        <i class="fas fa-spinner fa-spin"></i> Chargement des bâtiments...
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modale d'ajout/édition de bâtiment -->
+    <div class="modal" id="building-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-title">Ajouter un bâtiment</h2>
+            
+            <form id="building-form">
+                <input type="hidden" id="building-id">
+                
+                <div class="form-group">
+                    <label for="building-name">Nom du bâtiment</label>
+                    <div class="input-group">
+                        <i class="fas fa-building"></i>
+                        <input type="text" id="building-name" name="building-name" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="building-description">Description</label>
+                    <div class="input-group">
+                        <i class="fas fa-align-left"></i>
+                        <textarea id="building-description" name="building-description" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary close-btn">Annuler</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> <span id="save-btn-text">Ajouter</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modale de confirmation de suppression -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content">
+            <h2>Confirmation</h2>
+            <p>Êtes-vous sûr de vouloir supprimer ce bâtiment? Cette action est irréversible.</p>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary close-btn">Annuler</button>
+                <button type="button" class="btn-danger" id="confirm-delete">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Association El Badr. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is admin
+            if (!isAdmin()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const API_BASE_URL = 'http://localhost:80/api';
+            const buildingsTable = document.getElementById('buildings-table').querySelector('tbody');
+            const addBuildingBtn = document.getElementById('add-building-btn');
+            const searchInput = document.getElementById('search-building');
+            const buildingModal = document.getElementById('building-modal');
+            const confirmModal = document.getElementById('confirm-modal');
+            const buildingForm = document.getElementById('building-form');
+            const modalTitle = document.getElementById('modal-title');
+            const saveButtonText = document.getElementById('save-btn-text');
+            
+            let buildings = [];
+            let currentBuildingId = null;
+            
+            // Chargement des bâtiments au chargement de la page
+            loadBuildings();
+            
+            // Cliquer sur le bouton d'ajout d'un bâtiment
+            addBuildingBtn.addEventListener('click', function() {
+                openBuildingModal();
+            });
+            
+            // Fermer les événements modaux
+            document.querySelectorAll('.close-modal, .close-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    buildingModal.style.display = 'none';
+                    confirmModal.style.display = 'none';
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === buildingModal) {
+                    buildingModal.style.display = 'none';
+                }
+                if (event.target === confirmModal) {
+                    confirmModal.style.display = 'none';
+                }
+            });
+            
+            // Form submission
+            buildingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveBuildingData();
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                filterBuildings(searchTerm);
+            });
+            
+            // Delete confirmation
+            document.getElementById('confirm-delete').addEventListener('click', function() {
+                if (currentBuildingId) {
+                    deleteBuilding(currentBuildingId);
+                }
+            });
+            
+           // Chargement des bâtiments à partir de l'API
+            async function loadBuildings() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/batiments`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Échec du chargement des bâtiments');
+                    }
+                    
+                    buildings = await response.json();
+                    updateBuildingsTable(buildings);
+                } catch (error) {
+                    showError('Erreur lors du chargement des bâtiments: ' + error.message);
+                    buildingsTable.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="error-message">
+                                <i class="fas fa-exclamation-circle"></i> Erreur lors du chargement des bâtiments
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            // Mise à jour du tableau des bâtiments avec les données
+            function updateBuildingsTable(data) {
+                buildingsTable.innerHTML = '';
+                
+                if (data.length === 0) {
+                    buildingsTable.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="empty-message">
+                                <i class="fas fa-info-circle"></i> Aucun bâtiment trouvé
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                data.forEach(building => {
+                    // Obtenir le nombre de chambres (devrait normalement être récupéré de l'API)
+                    const roomCount = building.roomCount || 0;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${building.id}</td>
+                        <td>${building.nom}</td>
+                        <td>${building.description || '-'}</td>
+                        <td>${roomCount}</td>
+                        <td>${formatDate(building.date_creation)}</td>
+                        <td class="actions-cell">
+                            <button class="btn-action edit" data-id="${building.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-action view" data-id="${building.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-action delete" data-id="${building.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    buildingsTable.appendChild(row);
+                });
+                
+                // Add event listeners to buttons
+                document.querySelectorAll('.btn-action.edit').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        editBuilding(id);
+                    });
+                });
+                
+                document.querySelectorAll('.btn-action.view').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        viewBuilding(id);
+                    });
+                });
+                
+                document.querySelectorAll('.btn-action.delete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.getAttribute('data-id');
+                        confirmDelete(id);
+                    });
+                });
+            }
+            
+            // Filter buildings based on search term
+            function filterBuildings(searchTerm) {
+                if (!searchTerm) {
+                    updateBuildingsTable(buildings);
+                    return;
+                }
+                
+                const filtered = buildings.filter(building => 
+                    building.nom.toLowerCase().includes(searchTerm) || 
+                    (building.description && building.description.toLowerCase().includes(searchTerm))
+                );
+                
+                updateBuildingsTable(filtered);
+            }
+            
+            // Open modal for adding a new building
+            function openBuildingModal(building = null) {
+                buildingForm.reset();
+                
+                if (building) {
+                    // Edit mode
+                    modalTitle.textContent = 'Modifier le bâtiment';
+                    saveButtonText.textContent = 'Modifier';
+                    document.getElementById('building-id').value = building.id;
+                    document.getElementById('building-name').value = building.nom;
+                    document.getElementById('building-description').value = building.description || '';
+                    currentBuildingId = building.id;
+                } else {
+                    // Add mode
+                    modalTitle.textContent = 'Ajouter un bâtiment';
+                    saveButtonText.textContent = 'Ajouter';
+                    document.getElementById('building-id').value = '';
+                    currentBuildingId = null;
+                }
+                
+                buildingModal.style.display = 'block';
+            }
+            
+            // Load building data for editing
+            async function editBuilding(id) {
+                try {
+                    const building = buildings.find(b => b.id == id);
+                    
+                    if (building) {
+                        openBuildingModal(building);
+                    } else {
+                        // If not found in local data, fetch from API
+                        const response = await fetch(`${API_BASE_URL}/batiments/${id}`, {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Échec du chargement du bâtiment');
+                        }
+                        
+                        const buildingData = await response.json();
+                        openBuildingModal(buildingData);
+                    }
+                } catch (error) {
+                    showError('Erreur lors du chargement du bâtiment: ' + error.message);
+                }
+            }
+            
+            // Redirect to a detailed view page
+            function viewBuilding(id) {
+                // In a real implementation, this would redirect to a detailed view
+                alert('Affichage détaillé du bâtiment #' + id + '\nNon implémenté dans cette démo');
+            }
+            
+            // Show delete confirmation
+            function confirmDelete(id) {
+                currentBuildingId = id;
+                confirmModal.style.display = 'block';
+            }
+            
+            // Save building data (create or update)
+            async function saveBuildingData() {
+                const buildingId = document.getElementById('building-id').value;
+                const buildingName = document.getElementById('building-name').value;
+                const buildingDescription = document.getElementById('building-description').value;
+                
+                if (!buildingName) {
+                    showError('Le nom du bâtiment est requis');
+                    return;
+                }
+                
+                const buildingData = {
+                    nom: buildingName,
+                    description: buildingDescription
+                };
+                
+                try {
+                    let response;
+                    
+                    if (buildingId) {
+                        // Update existing building
+                        response = await fetch(`${API_BASE_URL}/batiments/${buildingId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                            },
+                            body: JSON.stringify(buildingData)
+                        });
+                    } else {
+                        // Create new building
+                        response = await fetch(`${API_BASE_URL}/batiments`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                            },
+                            body: JSON.stringify(buildingData)
+                        });
+                    }
+                    
+                    if (!response.ok) {
+                        throw new Error('Échec de l\'enregistrement du bâtiment');
+                    }
+                    
+                    // Refresh the data
+                    await loadBuildings();
+                    
+                    // Close the modal
+                    buildingModal.style.display = 'none';
+                    
+                    // Show success message
+                    showSuccess(buildingId ? 'Bâtiment modifié avec succès' : 'Bâtiment ajouté avec succès');
+                } catch (error) {
+                    showError('Erreur: ' + error.message);
+                }
+            }
+            
+            // Delete a building
+            async function deleteBuilding(id) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/batiments/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Échec de la suppression du bâtiment');
+                    }
+                    
+                    // Refresh the data
+                    await loadBuildings();
+                    
+                    // Close the modal
+                    confirmModal.style.display = 'none';
+                    
+                    // Show success message
+                    showSuccess('Bâtiment supprimé avec succès');
+                } catch (error) {
+                    showError('Erreur: ' + error.message);
+                    confirmModal.style.display = 'none';
+                }
+            }
+            
+            // Format date for display
+            function formatDate(dateString) {
+                const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+                return new Date(dateString).toLocaleDateString('fr-FR', options);
+            }
+        });
+    </script>
+
+    <style>
+        /* Fix form input alignment */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 12px;
+            color: #666;
+            z-index: 1;
+        }
+        
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            padding-left: 40px;
+            flex: 1;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            height: 42px;
+        }
+        
+        .input-group textarea {
+            min-height: 80px;
+            padding-top: 10px;
+        }
+    </style>
+</body>
+</html> 

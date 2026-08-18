@@ -1,0 +1,107 @@
+/* Form Styles for Association El Badr */
+
+/* Form containers */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Input groups with icons */
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-group i {
+    position: absolute;
+    left: 12px;
+    color: #666;
+    z-index: 1;
+}
+
+.input-group input,
+.input-group textarea,
+.input-group select {
+    padding-left: 40px;
+    flex: 1;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    height: 42px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-group textarea {
+    min-height: 80px;
+    padding-top: 10px;
+}
+
+/* Focus states */
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Toggle password button */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+}
+
+/* Form buttons */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Form validation */
+.input-group.error input,
+.input-group.error textarea,
+.input-group.error select {
+    border-color: #dc3545;
+}
+
+.input-validation-message {
+    font-size: 12px;
+    margin-top: 5px;
+    color: #dc3545;
+}
+
+/* Search box styling */
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+} 
